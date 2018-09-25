@@ -37,10 +37,10 @@ class DoublyLinkedList<T> {
 	// public method
 	public Node append(Node node) {
 		node.setNextNode(head);
-		if(head != null) {
+		if (head != null) {
 			head.setPreNode(node);
 		}
-		
+
 		head = node;
 
 		size++;
@@ -59,87 +59,136 @@ class DoublyLinkedList<T> {
 		head = newList.getHead();
 	}
 
-	public void sort_BubbleSort() {
-		this.bubbleSort();
+	public void sort_bubbleSort() {
+		if (this.getSize() != 0)
+			this.bubbleSort();
+	}
+
+	public void sort_selectionSort() {
+		if (this.getSize() != 0)
+			this.selectionSort();
 	}
 
 	public String toString() {
 		Iterator<Node> itr = new DLLIterator<Node>();
 		String str = "";
-		while(itr.hasNext()) {
+		while (itr.hasNext()) {
 			str += itr.next().getElement() + "\n";
 		}
 		return str;
 	}
 
 	// private method
+	private void insert(Node preNode, Node nextNode, Node newNode) {
+		if(nextNode == head) {
+			newNode.setNextNode(nextNode);
+			nextNode.setPreNode(newNode);
+			head = newNode;
+		}else if(nextNode == null) {
+			preNode.setNextNode(newNode);
+			newNode.setPreNode(preNode);
+		} else {
+			newNode.setNextNode(nextNode);
+			nextNode.setPreNode(newNode);
+			preNode.setNextNode(newNode);
+			newNode.setPreNode(preNode);
+		}
+		
+		size++;
+	}
+
+	private void remove(Node node) {
+		Node preNode = node.getPreNode();
+		Node nextNode = node.getNextNode();
+		
+		if(node == head) {
+			nextNode.setPreNode(null);
+			head = nextNode;
+		}else if(nextNode == null) {
+			preNode.setNextNode(nextNode);
+		} else {
+			preNode.setNextNode(nextNode);
+			nextNode.setPreNode(preNode);
+		}
+		
+		node.setNextNode(null);
+		node.setPreNode(null);
+		
+		size--;
+	}
+
 	private void insertionSort(Node node) {
 		int element = node.getElement();
 		Node p = head;
 		Node preNode = null;
 
+		// 넣을 위치 찾기
 		while (p != null && element > p.getElement()) {
 			preNode = p;
 			p = p.getNextNode();
 		}
-
-		if (p == head) {
-			node.setNextNode(head);
-			head = node;
-		} else if (p == null) {
-			preNode.setNextNode(node);
-			node.setPreNode(preNode);
-		} else {
-			node.setNextNode(p);
-			p.setPreNode(node);
-			preNode.setNextNode(node);
-			node.setPreNode(preNode);
-		}
-
-		size++;
+		
+		// 원소 추가
+		this.insert(preNode, p, node);
 	}
 
-	private Node bubbleSort() {
-		for (int p = 0; p<this.getSize(); p++) {
+	private void bubbleSort() {
+		for (int p = 0; p < this.getSize(); p++) {
 			Iterator<Node> itrq = this.ddlIterator();
 			Node preq = head;
-			Node q = itrq.next();;
+			Node q = itrq.next();
+
 			while (itrq.hasNext()) {
 				q = itrq.next();
 				preq = q.getPreNode();
-				
-				if(q.getElement() < preq.getElement()) {
-					Node nextq = q.getNextNode();
-					
-					preq.setNextNode(nextq);
-					// 마지막 node 지우기
-					if(nextq != null)
-						nextq.setPreNode(preq);
-					
-					// head부분과 그렇지 않은 부분 삭제했던 node preq 뒤에 추가
-					if(preq == head) {
-						q.setNextNode(preq);
-						preq.setPreNode(q);
-						head = q;
-					}else {
-						Node prepreq = preq.getPreNode();
-						
-						q.setNextNode(preq);
-						preq.setPreNode(q);
-						prepreq.setNextNode(q);
-						q.setPreNode(prepreq);
-					}
+
+				if (q.getElement() < preq.getElement()) {
+					// 원소 삭제 과정
+					this.remove(q);
+
+					// preq 바로 뒤에 q 원소 추가 과정
+					Node prepreq = preq.getPreNode();
+					this.insert(prepreq, preq, q);
 				}
 			}
 		}
-		
-		return head;
 	}
 
-//	 private Node selectionSort() {
-//		 
-//		 return head;
-//	 }
+	private void selectionSort() {
+		Iterator<Node> itr = this.ddlIterator();		
+		
+		while (itr.hasNext()) {
+			Node p = itr.next();
+			Node q = p;
+			Node r = q;
+
+			// 최소 원소 찾기
+			while (q != null) {
+				if (q.getElement() < r.getElement())
+					r = q;
+				q = q.getNextNode();
+			}
+
+			// 작은 원소(r)를 정렬 된 다음 원소(p)와 위치 바꿔치기
+			if(r.getPreNode() == p){ 
+				// 연달아 있는 원소의 위치를 바꿀 경우
+				this.remove(r);
+				
+				Node prep = p.getPreNode();
+				this.insert(prep, p, r);
+			}else if(r != p){
+				// 거리 차가 있는 원소의 위치를 바꿀 경우
+				Node prer = r.getPreNode();
+				this.remove(r);
+				
+				Node prep = p.getPreNode();
+				this.insert(prep, p, r);
+				
+				this.remove(p);
+				this.insert(prer, prer.getNextNode(), p);
+			}
+		}
+	}
 
 	// Iterator
 
