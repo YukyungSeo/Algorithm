@@ -1,4 +1,4 @@
-package Al01_InsertionSort;
+package Al01_201602013;
 
 import java.util.Iterator;
 
@@ -80,7 +80,9 @@ class DoublyLinkedList<T> {
 
 	// private method
 	private void insert(Node preNode, Node nextNode, Node newNode) {
-		if(nextNode == head) {
+		if(head == null){
+			head = newNode;
+		}else if(nextNode == head) {
 			newNode.setNextNode(nextNode);
 			nextNode.setPreNode(newNode);
 			head = newNode;
@@ -100,20 +102,20 @@ class DoublyLinkedList<T> {
 	private void remove(Node node) {
 		Node preNode = node.getPreNode();
 		Node nextNode = node.getNextNode();
-		
-		if(node == head) {
+
+		if (node == head) {
 			nextNode.setPreNode(null);
 			head = nextNode;
-		}else if(nextNode == null) {
+		} else if (nextNode == null) {
 			preNode.setNextNode(nextNode);
 		} else {
 			preNode.setNextNode(nextNode);
 			nextNode.setPreNode(preNode);
 		}
-		
+
 		node.setNextNode(null);
 		node.setPreNode(null);
-		
+
 		size--;
 	}
 
@@ -127,7 +129,7 @@ class DoublyLinkedList<T> {
 			preNode = p;
 			p = p.getNextNode();
 		}
-		
+
 		// 원소 추가
 		this.insert(preNode, p, node);
 	}
@@ -155,8 +157,8 @@ class DoublyLinkedList<T> {
 	}
 
 	private void selectionSort() {
-		Iterator<Node> itr = this.ddlIterator();		
-		
+		Iterator<Node> itr = this.ddlIterator();
+
 		while (itr.hasNext()) {
 			Node p = itr.next();
 			Node q = p;
@@ -170,20 +172,20 @@ class DoublyLinkedList<T> {
 			}
 
 			// 작은 원소(r)를 정렬 된 다음 원소(p)와 위치 바꿔치기
-			if(r.getPreNode() == p){ 
+			if (r.getPreNode() == p) {
 				// 연달아 있는 원소의 위치를 바꿀 경우
 				this.remove(r);
-				
+
 				Node prep = p.getPreNode();
 				this.insert(prep, p, r);
-			}else if(r != p){
+			} else if (r != p) {
 				// 거리 차가 있는 원소의 위치를 바꿀 경우
 				Node prer = r.getPreNode();
 				this.remove(r);
-				
+
 				Node prep = p.getPreNode();
 				this.insert(prep, p, r);
-				
+
 				this.remove(p);
 				this.insert(prer, prer.getNextNode(), p);
 			}
