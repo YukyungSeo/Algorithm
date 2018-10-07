@@ -1,15 +1,25 @@
 package Al02_201602013;
 
 import java.util.Iterator;
+import java.util.Random;
 
 public class ArrayList<T> {
 	private int[] arr;
 	private int size;
+	private int count;
+	private int pivotKinds;
 
 	// construct
 	public ArrayList() {
 		arr = new int[10000];
 		this.size = 0;
+		this.count = 0;
+	}
+	public ArrayList(int pivotKinds) {
+		arr = new int[10000];
+		this.size = 0;
+		this.count = 0;
+		this.pivotKinds = pivotKinds;
 	}
 
 	// getter & setter
@@ -29,10 +39,12 @@ public class ArrayList<T> {
 
 	public void sort_mergeSort() {
 		mergeSort(0, size - 1);
+		System.out.print(count + "");
 	}
 
 	public void sort_quickSort() {
-		quickSort(0, size-1);
+		quickSort(0, size - 1);
+		System.out.print(count + "");
 	}
 
 	public String toString() {
@@ -47,7 +59,8 @@ public class ArrayList<T> {
 	// private method
 	private void mergeSort(int start, int end) {
 		if (end - start < 4) {
-			// 4���� �� �������� insertion
+			// 4개가 된 순간부터 insertion
+			// 다른 case를 test해보고 싶다면 '4'를 원하는 숫자로 바꿀 수 있다.
 			insertionSort(start, end);
 		} else {
 			int mid = (start + end) / 2;
@@ -75,11 +88,13 @@ public class ArrayList<T> {
 				point2++;
 			}
 			index++;
+			count++;
 		}
 		while (point1 <= mid) {
 			arr[index] = tmp[point1];
 			index++;
 			point1++;
+			count++;
 		}
 	}
 
@@ -102,44 +117,53 @@ public class ArrayList<T> {
 				arr[minp] = arr[point];
 				arr[point] = min;
 				point++;
+				count++;
 			}
 			index++;
 		}
 	}
-	private void quickSort(int start, int end) {
-		int pivot = arr[end];
-		int index = partition(pivot, start, end-1);
-		
-		swap(index, end);
-		
-		if(start < index-1) {
-			quickSort(start, index-1);
-		}
-		if(index < end-1) {
-			quickSort(index+1, end);
+
+	private void quickSort(int left, int right) {
+		if (left < right) {
+			int mid = this.partition(left, right);
+			this.quickSort(left, mid-1);
+			this.quickSort(mid, right);
 		}
 	}
-	private int partition(int pivot, int start, int end) {
-		while(start <= end) {
-			while(arr[start] < pivot && start < end) start++;
-			while(arr[end] > pivot && start < end) end--;
-			
-			//if(start <= end) {
-			swap(start, end);
-			
-			start++;
-			end--;
-			//}
-		}
+
+	private int partition(int left, int right) {
+		int pivot = this.pivot(left, right);
+		int toRight = left-1;
+		int toLeft = right+1;
+		do {
+			do { toRight++; } while (arr[toRight] < pivot);
+			do { toLeft--; } while (arr[toLeft] > pivot);
+			if (toRight < toLeft) {
+				swap(toRight, toLeft);
+			}
+		} while (toRight < toLeft);
 		
-		return start;
+		return toRight;
 	}
+
+	private int pivot(int left, int right) {
+		if(pivotKinds == 1) {
+			return arr[right];
+		}else {
+			Random rand = new Random();
+			int  n = rand.nextInt(right - left) + 1;
+			
+			return arr[left + n];
+		}
+	}
+
 	private void swap(int p, int q) {
 		int element = arr[p];
 		arr[p] = arr[q];
 		arr[q] = element;
+		count++;
 	}
-	
+
 	// Iterator
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
