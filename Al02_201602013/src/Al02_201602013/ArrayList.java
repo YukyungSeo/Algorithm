@@ -27,8 +27,12 @@ public class ArrayList<T> {
 		size++;
 	}
 
-	public void sort_merSort() {
-		mergeSort(0, size-1);
+	public void sort_mergeSort() {
+		mergeSort(0, size - 1);
+	}
+
+	public void sort_quickSort() {
+		quickSort(0, size-1);
 	}
 
 	public String toString() {
@@ -81,16 +85,16 @@ public class ArrayList<T> {
 
 	private void insertionSort(int start, int end) {
 		int index = start;
-		
-		while(index <= end) {
+
+		while (index <= end) {
 			int point = index;
-			
-			while(point <= end) {
+
+			while (point <= end) {
 				int min = arr[point];
 				int minp = point;
-				
-				for(int i = point; i <= end; i++) {
-					if(arr[i] < min) {
+
+				for (int i = point; i <= end; i++) {
+					if (arr[i] < min) {
 						min = arr[i];
 						minp = i;
 					}
@@ -102,7 +106,40 @@ public class ArrayList<T> {
 			index++;
 		}
 	}
-
+	private void quickSort(int start, int end) {
+		int pivot = arr[end];
+		int index = partition(pivot, start, end-1);
+		
+		swap(index, end);
+		
+		if(start < index-1) {
+			quickSort(start, index-1);
+		}
+		if(index < end-1) {
+			quickSort(index+1, end);
+		}
+	}
+	private int partition(int pivot, int start, int end) {
+		while(start <= end) {
+			while(arr[start] < pivot && start < end) start++;
+			while(arr[end] > pivot && start < end) end--;
+			
+			//if(start <= end) {
+			swap(start, end);
+			
+			start++;
+			end--;
+			//}
+		}
+		
+		return start;
+	}
+	private void swap(int p, int q) {
+		int element = arr[p];
+		arr[p] = arr[q];
+		arr[q] = element;
+	}
+	
 	// Iterator
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -130,6 +167,5 @@ public class ArrayList<T> {
 				return arr[next - 1];
 			}
 		}
-
 	}
 }
